@@ -44,6 +44,7 @@ namespace TG_Bot
 
             
             var me = await botClient.GetMeAsync();
+            await UpdateScheduleAsync(22);
 
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
@@ -69,14 +70,26 @@ namespace TG_Bot
                 if (messageText == "Расписание")
                 {
                     ConfigWorker configWorker = new ConfigWorker();
-                    ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.DayOfWeek);
                     Parser parser = new Parser();
-                    parser.ParseHTML();
-                    TableRowData tableRowData = configWorker.GetTableRowData();
-                    botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
+
+                    // Exp how to use archiveConf
+                    if (configWorker.GetFromArchive(DateTime.Today) is not null)
+                    {
+                        botResponse = configWorker.GetFromArchive(DateTime.Today).TextData;
+                        await Console.Out.WriteLineAsync("Arc");
+                    }
+                    else
+                    {
+                        parser.ParseHTML();
+                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.DayOfWeek, configWorker.GetTableRowData().DayOfSchedule);
+                        TableRowData tableRowData = configWorker.GetTableRowData();
+                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
+                        configWorker.SaveToArchive(botResponse, DateTime.Today);
+                    }
+
                 }
 
-                // Echo received message text
+                // received message text
                 Message sentMessage = await botClient.SendTextMessageAsync(
                     chatId: chatId,
                     text: botResponse,
@@ -98,6 +111,22 @@ namespace TG_Bot
             }
 
         }
-       
+     
+        static async Task UpdateScheduleAsync(int hour)
+        {
+            while (true)
+            {
+                DateTime currentTime = DateTime.Now;
+
+                if (currentTime.Hour == hour && currentTime.Minute == 0)
+                {
+                    Parser parser = new Parser();
+                    parser.ParseHTML();
+                    await Console.Out.WriteLineAsync("Parsing!");
+                }
+                await Task.Delay(TimeSpan.FromMinutes(1));
+            }
+        }
+
     }
 }

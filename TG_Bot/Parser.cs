@@ -14,6 +14,10 @@ namespace TG_Bot
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc = web.Load(url);
 
+            // Geting Day of Schedule
+            var divElements = doc.DocumentNode.SelectNodes("//div");
+            string dayOfSchedule = divElements[3].InnerText;
+
             // Находим таблицу на странице
             HtmlNode table = doc.DocumentNode.SelectSingleNode("//table");
 
@@ -32,7 +36,7 @@ namespace TG_Bot
                     // Проверяем, есть ли вторая ячейка и содержит ли она нужную нам надпись
                     if (cells.Count > 1)
                     {
-                        if (cells[1].InnerText.Contains("ИС1-15"))
+                        if (cells[1].InnerText.Contains("ДИ1-21"))
                         {
 
                             // Создаем объект для хранения данных строки
@@ -44,7 +48,8 @@ namespace TG_Bot
                                 ScheduledLessons = cells[3].InnerText,
                                 ReplacementLessons = cells[4].InnerText,
                                 Auditorium = cells[5].InnerText,
-                                Day = DateTime.Today.DayOfWeek
+                                Day = DateTime.Today.DayOfWeek,
+                                DayOfSchedule = dayOfSchedule
                             };
 
                             ConfigWorker configWorker = new ConfigWorker();

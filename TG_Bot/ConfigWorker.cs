@@ -4,12 +4,14 @@ namespace TG_Bot
 {
     public class ConfigWorker
     {
+        private readonly string archiveConf = "archiveConf.json";
         private readonly string tableConf = "tableConf.json";
-        private readonly string scheduleConf = "scheduleConf.json";
+        private readonly string firstScheduleConf = "firstScheduleConf.json";
+        private readonly string secondScheduleConf = "secondScheduleConf.json";
 
         public void SaveTableRowData(TableRowData rowData)
         {
-            string json = JsonConvert.SerializeObject(rowData, Newtonsoft.Json.Formatting.Indented);
+            string json = JsonConvert.SerializeObject(rowData, Formatting.Indented);
 
             File.WriteAllText(tableConf, json);
         }
@@ -22,9 +24,41 @@ namespace TG_Bot
             return item;
         }
 
-        public ScheduleTable GetScheduleTable(DayOfWeek day)
+        public void SaveToArchive(string textData, DateTime dayOfSave)
         {
-            string jsonText = File.ReadAllText(scheduleConf);
+            ArchiveSchedule archiveSchedule = new ArchiveSchedule
+            {
+                TextData = textData,
+                DateOfSchedule = dayOfSave,
+            };
+            string json = JsonConvert.SerializeObject(archiveSchedule, Formatting.Indented);
+
+            File.WriteAllText(archiveConf, json);
+        }
+
+        public ArchiveSchedule GetFromArchive(DateTime dayOfSave)
+        {
+            string jsonText = File.ReadAllText(archiveConf);
+            var item = JsonConvert.DeserializeObject<ArchiveSchedule>(jsonText);
+            return item;
+        }
+
+        public ScheduleTable GetScheduleTable(DayOfWeek day, string dayOfSchedule)
+        {
+            if (dayOfSchedule == "(Знаменатель) Первая смена")
+            {
+                return ReadScgeduleTable(day, secondScheduleConf);
+            }
+            else
+            {
+                return ReadScgeduleTable(day, firstScheduleConf);
+            }
+            return null;
+        }
+
+        private ScheduleTable ReadScgeduleTable(DayOfWeek day, string path)
+        {
+            string jsonText = File.ReadAllText(path);
             var records = JsonConvert.DeserializeObject<ScheduleTable[]>(jsonText);
             foreach (var record in records)
             {
@@ -36,23 +70,6 @@ namespace TG_Bot
             return null;
         }
 
-    }
-
-    public class ScheduleTable
-    {
-        public Dictionary<int, string[]>? Lessons { get; set; }
-        public DayOfWeek? Day { get; set; }
-    }
-
-    public class TableRowData
-    {
-        public int Index { get; set; }
-        public string? Group { get; set; }
-        public string? NumbersReplacementLessons { get; set; }
-        public string? ScheduledLessons { get; set; }
-        public string? ReplacementLessons { get; set; }
-        public string? Auditorium { get; set; }
-        public DayOfWeek? Day { get; set; }
     }
 
 }
