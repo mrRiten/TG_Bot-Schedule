@@ -1,4 +1,6 @@
 ﻿using System.Reflection.PortableExecutable;
+using System.Runtime.CompilerServices;
+using System.Transactions;
 using System.Xml;
 using HtmlAgilityPack;
 using Newtonsoft.Json;
@@ -13,10 +15,10 @@ namespace TG_Bot
 {
     internal class Program
     {
-        
+
         public static async Task Main(string[] args)
         {
-            var botClient = new TelegramBotClient("token");
+            var botClient = new TelegramBotClient("6854187070:AAGVtITTFVSBRxEqJi6dNkUdMSJxkJvWnCg");
 
             using CancellationTokenSource cts = new();
 
@@ -42,9 +44,9 @@ namespace TG_Bot
                 cancellationToken: cts.Token
             );
 
-            
+
             var me = await botClient.GetMeAsync();
-            await UpdateScheduleAsync(22);
+            await UpdateScheduleAsync(19);
 
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
@@ -66,27 +68,19 @@ namespace TG_Bot
                 Console.WriteLine($"Received a '{messageText}' message in chat {chatId}.");
 
                 string botResponse = "";
+                ConfigWorker configWorker = new ConfigWorker();
 
                 if (messageText == "Расписание")
                 {
-                    ConfigWorker configWorker = new ConfigWorker();
-                    Parser parser = new Parser();
-
-                    // Exp how to use archiveConf
-                    if (configWorker.GetFromArchive(DateTime.Today) is not null)
-                    {
-                        botResponse = configWorker.GetFromArchive(DateTime.Today).TextData;
-                        await Console.Out.WriteLineAsync("Arc");
-                    }
-                    else
-                    {
-                        parser.ParseHTML();
-                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.DayOfWeek, configWorker.GetTableRowData().DayOfSchedule);
-                        TableRowData tableRowData = configWorker.GetTableRowData();
-                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
-                        configWorker.SaveToArchive(botResponse, DateTime.Today);
-                    }
-
+                    botResponse = configWorker.GetFromArchive(DateTime.Today.DayOfWeek).TextData ?? "";
+                }
+                else if (messageText == "Следующее")
+                {
+                    botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(1).DayOfWeek).TextData ?? "";
+                }
+                else if (messageText == "Предыдущее")
+                {
+                    botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek).TextData ?? "";
                 }
 
                 // received message text
@@ -111,19 +105,26 @@ namespace TG_Bot
             }
 
         }
-     
+
         static async Task UpdateScheduleAsync(int hour)
         {
+            // defoult value: hour = 12, minute = 30
             while (true)
             {
                 DateTime currentTime = DateTime.Now;
 
-                if (currentTime.Hour == hour && currentTime.Minute == 0)
+                if (currentTime.Hour == hour && currentTime.Minute == 32)
                 {
+                    ConfigWorker configWorker = new ConfigWorker();
                     Parser parser = new Parser();
                     parser.ParseHTML();
+                    TableRowData tableRowData = configWorker.GetTableRowData();
+                    ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.AddDays(1).DayOfWeek, tableRowData.DayOfSchedule);
+                    string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
+                    configWorker.SaveToArchive(resultText, currentTime);
                     await Console.Out.WriteLineAsync("Parsing!");
                 }
+
                 await Task.Delay(TimeSpan.FromMinutes(1));
             }
         }

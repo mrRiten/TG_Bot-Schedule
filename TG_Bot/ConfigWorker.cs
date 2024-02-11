@@ -11,9 +11,9 @@ namespace TG_Bot
 
         public void SaveTableRowData(TableRowData rowData)
         {
-            string json = JsonConvert.SerializeObject(rowData, Formatting.Indented);
+            string jsonText = JsonConvert.SerializeObject(rowData, Formatting.Indented);
 
-            File.WriteAllText(tableConf, json);
+            File.WriteAllText(tableConf, jsonText);
         }
 
         public TableRowData GetTableRowData()
@@ -24,23 +24,71 @@ namespace TG_Bot
             return item;
         }
 
+        private List<ArchiveSchedule> CheckDataInArchive(List<ArchiveSchedule> archives)
+        {
+            if (archives.Count >= 4)
+            {
+                archives.RemoveAt(0);
+            }
+            return archives;
+        }
+
+        private int FindIdInArchiveByDate(List<ArchiveSchedule> archives, DayOfWeek day)
+        {
+            int indOfUpdate = -1;
+            for (int i = 0; i != archives.Count; i++)
+            {
+                if (archives[i].DateOfSchedule == day)
+                {
+                    indOfUpdate = i;
+                }
+            }
+            return indOfUpdate;
+        }
+
         public void SaveToArchive(string textData, DateTime dayOfSave)
         {
+
+            var archives = CheckDataInArchive(GetAllArchive()); // clear archives
+
             ArchiveSchedule archiveSchedule = new ArchiveSchedule
             {
                 TextData = textData,
-                DateOfSchedule = dayOfSave,
+                DateOfSchedule = dayOfSave.DayOfWeek
             };
-            string json = JsonConvert.SerializeObject(archiveSchedule, Formatting.Indented);
 
-            File.WriteAllText(archiveConf, json);
+            if (FindIdInArchiveByDate(archives, dayOfSave.DayOfWeek) != -1)
+            {
+                archives[FindIdInArchiveByDate(archives, dayOfSave.DayOfWeek)] = archiveSchedule;
+            }
+            else
+            {
+                archives.Add(archiveSchedule);
+            }
+
+            string jsonText = JsonConvert.SerializeObject(archives, Formatting.Indented);
+
+            File.WriteAllText(archiveConf, jsonText);
         }
 
-        public ArchiveSchedule GetFromArchive(DateTime dayOfSave)
+        public List<ArchiveSchedule> GetAllArchive()
         {
             string jsonText = File.ReadAllText(archiveConf);
-            var item = JsonConvert.DeserializeObject<ArchiveSchedule>(jsonText);
-            return item;
+            var archives = JsonConvert.DeserializeObject<List<ArchiveSchedule>>(jsonText);
+            return archives;
+        }
+
+        public ArchiveSchedule GetFromArchive(DayOfWeek dayOfSave)
+        {
+            var archives = GetAllArchive();
+            foreach (var record in archives)
+            {
+                if (record.DateOfSchedule == dayOfSave)
+                {
+                    return record;
+                }
+            }
+            return null;
         }
 
         public ScheduleTable GetScheduleTable(DayOfWeek day, string dayOfSchedule)

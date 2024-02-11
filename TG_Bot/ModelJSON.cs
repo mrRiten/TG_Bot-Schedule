@@ -9,7 +9,7 @@ namespace TG_Bot
     public class ArchiveSchedule
     {
         public string? TextData { get; set; }
-        public DateTime DateOfSchedule { get; set; }
+        public DayOfWeek DateOfSchedule { get; set; }
     }
 
     public class ScheduleTable
