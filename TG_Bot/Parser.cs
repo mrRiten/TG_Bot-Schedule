@@ -1,15 +1,14 @@
 ﻿using HtmlAgilityPack;
-using Newtonsoft.Json;
 
 
 namespace TG_Bot
 {
     public class Parser
     {
-        string url = "https://menu.sttec.yar.ru/timetable/rasp_first.html";
-
         public void ParseHTML()
         {
+            string url = "https://menu.sttec.yar.ru/timetable/rasp_first.html";
+
             // Создаем объект HtmlWeb и загружаем HTML страницу
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc = web.Load(url);
@@ -20,6 +19,9 @@ namespace TG_Bot
 
             // Находим таблицу на странице
             HtmlNode table = doc.DocumentNode.SelectSingleNode("//table");
+
+            // Cписок для хранения данных строк таблицы
+            var rowDataList = new List<TableRowData>();
 
             // Проверка таблицы
             if (table != null)
@@ -36,7 +38,7 @@ namespace TG_Bot
                     // Проверяем, есть ли вторая ячейка и содержит ли она нужную нам надпись
                     if (cells.Count > 1)
                     {
-                        if (cells[1].InnerText.Contains("ДИ1-21"))
+                        if (cells[1].InnerText.Contains("СД2-11"))
                         {
 
                             // Создаем объект для хранения данных строки
@@ -48,25 +50,22 @@ namespace TG_Bot
                                 ScheduledLessons = cells[3].InnerText,
                                 ReplacementLessons = cells[4].InnerText,
                                 Auditorium = cells[5].InnerText,
-                                Day = DateTime.Today.DayOfWeek,
                                 DayOfSchedule = dayOfSchedule
                             };
 
-                            ConfigWorker configWorker = new ConfigWorker();
-                            configWorker.SaveTableRowData(rowData);
+                            // Добавление в список
+                            rowDataList.Add(rowData);
 
-                            break;
                         }
-                        else if (i == rows.Count - 1) Console.WriteLine("Нет изменений");
                     }
                     else Console.WriteLine("Не найден 2 столбец");
                 }
 
             }
             else Console.WriteLine("Таблица не найдена");
+
+            ConfigWorker configWorker = new ConfigWorker();
+            configWorker.SaveTableRowData(rowDataList);
         }
     }
-
-    
-
 }

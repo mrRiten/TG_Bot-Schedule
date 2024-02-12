@@ -113,15 +113,15 @@ namespace TG_Bot
             {
                 DateTime currentTime = DateTime.Now;
 
-                if (currentTime.Hour == hour && currentTime.Minute == 32)
+                if (currentTime.Hour >= hour && currentTime.Minute == 30)
                 {
-                    ConfigWorker configWorker = new ConfigWorker();
-                    Parser parser = new Parser();
+                    ConfigWorker configWorker = new();
+                    Parser parser = new();
                     parser.ParseHTML();
-                    TableRowData tableRowData = configWorker.GetTableRowData();
-                    ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.AddDays(1).DayOfWeek, tableRowData.DayOfSchedule);
+                    var tableRowData = configWorker.GetTableRowData();
+                    ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
                     string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
-                    configWorker.SaveToArchive(resultText, currentTime);
+                    configWorker.SaveToArchive(resultText, currentTime.AddDays(1));
                     await Console.Out.WriteLineAsync("Parsing!");
                 }
 

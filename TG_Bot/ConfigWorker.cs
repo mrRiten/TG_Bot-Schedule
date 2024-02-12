@@ -9,17 +9,17 @@ namespace TG_Bot
         private readonly string firstScheduleConf = "firstScheduleConf.json";
         private readonly string secondScheduleConf = "secondScheduleConf.json";
 
-        public void SaveTableRowData(TableRowData rowData)
+        public void SaveTableRowData(List<TableRowData> rowData)
         {
             string jsonText = JsonConvert.SerializeObject(rowData, Formatting.Indented);
 
             File.WriteAllText(tableConf, jsonText);
         }
 
-        public TableRowData GetTableRowData()
+        public List<TableRowData> GetTableRowData()
         {
             string jsonText = File.ReadAllText(tableConf);
-            var item = JsonConvert.DeserializeObject<TableRowData>(jsonText);
+            var item = JsonConvert.DeserializeObject<List<TableRowData>>(jsonText);
 
             return item;
         }
@@ -101,7 +101,6 @@ namespace TG_Bot
             {
                 return ReadScgeduleTable(day, firstScheduleConf);
             }
-            return null;
         }
 
         private ScheduleTable ReadScgeduleTable(DayOfWeek day, string path)

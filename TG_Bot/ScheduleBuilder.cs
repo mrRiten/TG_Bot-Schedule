@@ -9,21 +9,24 @@ namespace TG_Bot
 {
     public class ScheduleBuilder
     {
-        public static string BuildScheduleTable(ScheduleTable scheduleTable, TableRowData tableRowData)
+        public static string BuildScheduleTable(ScheduleTable scheduleTable, List<TableRowData> tableRowData)
         {
             string[] numberRepLessons;
-            if (tableRowData.NumbersReplacementLessons.Length > 1)
+            foreach(TableRowData row in tableRowData)
             {
-                numberRepLessons = tableRowData.NumbersReplacementLessons.Split(",");
-            }
-            else
-            {
-                numberRepLessons = [tableRowData.NumbersReplacementLessons];
-            }
+                if (row.NumbersReplacementLessons.Length > 1)
+                {
+                    numberRepLessons = row.NumbersReplacementLessons.Split(",");
+                }
+                else
+                {
+                    numberRepLessons = [row.NumbersReplacementLessons];
+                }
 
-            foreach (var number in numberRepLessons)
-            {
-                scheduleTable.Lessons[int.Parse(number)] = [tableRowData.ReplacementLessons, tableRowData.Auditorium];
+                foreach (var number in numberRepLessons)
+                {
+                    scheduleTable.Lessons[int.Parse(number)] = [row.ReplacementLessons, row.Auditorium];
+                }
             }
 
             string result = $"Расписание на {scheduleTable.Day}\n";
