@@ -38,7 +38,7 @@ namespace TG_Bot
                     // Проверяем, есть ли вторая ячейка и содержит ли она нужную нам надпись
                     if (cells.Count > 1)
                     {
-                        if (cells[1].InnerText.Contains("СД2-11"))
+                        if (cells[1].InnerText.Contains("ИС1-21"))
                         {
 
                             // Создаем объект для хранения данных строки

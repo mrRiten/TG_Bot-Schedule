@@ -49,7 +49,7 @@ namespace TG_Bot
         public void SaveToArchive(string textData, DateTime dayOfSave)
         {
 
-            var archives = CheckDataInArchive(GetAllArchive()); // clear archives
+            var archives = CheckDataInArchive(GetAllArchive()); // correct archives
 
             ArchiveSchedule archiveSchedule = new ArchiveSchedule
             {

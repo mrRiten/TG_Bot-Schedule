@@ -29,13 +29,7 @@ namespace TG_Bot
                 }
             }
 
-            string result = $"Расписание на {scheduleTable.Day}\n";
-            
-            foreach(var item in scheduleTable.Lessons)
-            {
-                result += $"{item.Key} {item.Value[0]} - {item.Value[1]}\n";
-            }
-            return result;
+            return BuildSimpleSchedule(scheduleTable);
         }
 
         public static string BuildScheduleTable(ScheduleTable scheduleTable)

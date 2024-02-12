@@ -46,7 +46,7 @@ namespace TG_Bot
 
 
             var me = await botClient.GetMeAsync();
-            await UpdateScheduleAsync(19);
+            await UpdateScheduleAsync(12, 30);
 
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
@@ -76,6 +76,12 @@ namespace TG_Bot
                 }
                 else if (messageText == "Следующее")
                 {
+                    if (DateTime.Now.Hour < 12)
+                    {
+                        var tableRowData = configWorker.GetTableRowData();
+                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.DayOfWeek, tableRowData[0].DayOfSchedule);
+                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
+                    }
                     botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(1).DayOfWeek).TextData ?? "";
                 }
                 else if (messageText == "Предыдущее")
@@ -106,27 +112,41 @@ namespace TG_Bot
 
         }
 
-        static async Task UpdateScheduleAsync(int hour)
+        public static async Task UpdateScheduleAsync(int hour, int minute)
         {
-            // defoult value: hour = 12, minute = 30
+            // default value: hour = 12, minute = 30
             while (true)
             {
-                DateTime currentTime = DateTime.Now;
+                var currentTime = DateTime.Now.AddDays(-1);
 
-                if (currentTime.Hour >= hour && currentTime.Minute == 30)
+                if (currentTime.Hour >= hour && currentTime.Minute == minute)
                 {
-                    ConfigWorker configWorker = new();
-                    Parser parser = new();
-                    parser.ParseHTML();
-                    var tableRowData = configWorker.GetTableRowData();
-                    ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Today.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
-                    string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
-                    configWorker.SaveToArchive(resultText, currentTime.AddDays(1));
-                    await Console.Out.WriteLineAsync("Parsing!");
+                    if (currentTime.DayOfWeek == DayOfWeek.Saturday)
+                    {
+                        CreateNewSchedule(2, currentTime);
+                        await Console.Out.WriteLineAsync("Parsing!");
+                    }
+                    else
+                    {
+                        CreateNewSchedule(1, currentTime);
+                        await Console.Out.WriteLineAsync("Parsing!");
+                    }
+                        
                 }
 
                 await Task.Delay(TimeSpan.FromMinutes(1));
             }
+        }
+
+        static void CreateNewSchedule(int addDyasValue, DateTime currentTime)
+        {
+            ConfigWorker configWorker = new();
+            Parser parser = new();
+            parser.ParseHTML();
+            var tableRowData = configWorker.GetTableRowData();
+            ScheduleTable scheduleTable = configWorker.GetScheduleTable(currentTime.AddDays(addDyasValue).DayOfWeek, tableRowData[0].DayOfSchedule);
+            string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
+            configWorker.SaveToArchive(resultText, currentTime.AddDays(addDyasValue));
         }
 
     }

@@ -26,7 +26,6 @@ namespace TG_Bot
         public string? ScheduledLessons { get; set; }
         public string? ReplacementLessons { get; set; }
         public string? Auditorium { get; set; }
-        public DayOfWeek? Day { get; set; }
         public string? DayOfSchedule { get; set; }
     }
 }
