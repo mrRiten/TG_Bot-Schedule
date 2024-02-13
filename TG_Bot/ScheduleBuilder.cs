@@ -30,9 +30,43 @@
             return BuildSimpleSchedule(scheduleTable);
         }
 
+        private static string BuildBeautifulWeekday(ScheduleTable scheduleTable)
+        {
+            string weekday = String.Concat(scheduleTable.Day);
+
+            switch (weekday)
+            {
+                case "Monday":
+                    weekday = "𝐌𝐨𝐧𝐝𝐚𝐲";
+                    break;
+                case "Tuesday":
+                    weekday = "𝐓𝐮𝐞𝐬𝐝𝐚𝐲";
+                    break;
+                case "Wednesday":
+                    weekday = "𝐖𝐞𝐝𝐧𝐞𝐬𝐝𝐚𝐲";
+                    break;
+                case "Thursday":
+                    weekday = "𝐓𝐡𝐮𝐫𝐬𝐝𝐚𝐲";
+                    break;
+                case "Friday":
+                    weekday = "𝐅𝐫𝐢𝐝𝐚𝐲";
+                    break;
+                case "Saturday":
+                    weekday = "𝐒𝐚𝐭𝐮𝐫𝐝𝐚𝐲";
+                    break;
+                case "Sunday":
+                    weekday = "𝐒𝐮𝐧𝐝𝐚𝐲";
+                    break;
+                default:
+                    break;
+            }
+            return $"{weekday}";
+        }
+
         private static string BuildSimpleSchedule(ScheduleTable scheduleTable)
         {
-            string result = $"📑 Расписание на {scheduleTable.Day}\n";
+            string weekday = BuildBeautifulWeekday(scheduleTable);
+            string result = $"📑 Расписание на *{weekday}*\n";
             ConfigWorker configWorker = new();
             ScheduleTime scheduleTime = configWorker.GetScheduleTime();
 
