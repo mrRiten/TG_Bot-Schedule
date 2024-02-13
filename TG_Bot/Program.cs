@@ -12,7 +12,7 @@ namespace TG_Bot
 
         public static async Task Main(string[] args)
         {
-            var botClient = new TelegramBotClient("6750360636:AAHIGBvAWns6JgyvrzRhUO-e6Y0CvKzwLdI");
+            var botClient = new TelegramBotClient("6854187070:AAGVtITTFVSBRxEqJi6dNkUdMSJxkJvWnCg");
 
             using CancellationTokenSource cts = new();
 
@@ -66,7 +66,7 @@ namespace TG_Bot
                 }
                 else if (messageText == "Следующее ➡️")
                 {
-                    if (DateTime.Now.Hour < 12 || DateTime.Now.Hour == 12 && DateTime.Now.Minute == 1)
+                    if (DateTime.Now.Hour < 12 || DateTime.Now.Hour == 12 && DateTime.Now.Minute <= 1)
                     {
                         var tableRowData = configWorker.GetTableRowData();
                         ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
