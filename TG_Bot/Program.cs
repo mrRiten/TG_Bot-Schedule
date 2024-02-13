@@ -1,10 +1,4 @@
-﻿using System.Reflection.PortableExecutable;
-using System.Runtime.CompilerServices;
-using System.Transactions;
-using System.Xml;
-using HtmlAgilityPack;
-using Newtonsoft.Json;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
@@ -30,8 +24,8 @@ namespace TG_Bot
 
             ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
             {
-                new KeyboardButton[] { "Расписание" },
-                ["Предыдущее", "Следующее"],
+                new KeyboardButton[] { "📑 Расписание" },
+                ["⬅️ Предыдущее", "Следующее ➡️"],
             })
             {
                 ResizeKeyboard = true
@@ -70,24 +64,31 @@ namespace TG_Bot
                 string botResponse = "";
                 ConfigWorker configWorker = new ConfigWorker();
 
-                if (messageText == "Расписание")
+                if (messageText == "📑 Расписание")
                 {
                     botResponse = configWorker.GetFromArchive(DateTime.Today.DayOfWeek).TextData ?? "";
                 }
-                else if (messageText == "Следующее")
+                else if (messageText == "Следующее ➡️")
                 {
-                    if (DateTime.Now.Hour < 12)
+                    if (DateTime.Now.Hour <= 12 && DateTime.Now.Minute <= 30)
                     {
                         var tableRowData = configWorker.GetTableRowData();
-                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.DayOfWeek, tableRowData[0].DayOfSchedule);
+                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
                         botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
                     }
-                    botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(1).DayOfWeek).TextData ?? "";
+                    else
+                    {
+                        botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(1).DayOfWeek).TextData ?? "Ошибка";
+                    }
                 }
-                else if (messageText == "Предыдущее")
+                else if (messageText == "⬅️ Предыдущее")
                 {
                     botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek).TextData ?? "";
                 }
+                else{
+                    botResponse = "Я не знаю такой команды(";
+                }
+
 
                 // received message text
                 Message sentMessage = await botClient.SendTextMessageAsync(
@@ -117,9 +118,9 @@ namespace TG_Bot
             // default value: hour = 12, minute = 30
             while (true)
             {
-                var currentTime = DateTime.Now.AddDays(-1);
+                var currentTime = DateTime.Now;
 
-                if (currentTime.Hour >= hour && currentTime.Minute == minute)
+                if (currentTime.Hour >= hour && currentTime.Minute >= minute)
                 {
                     if (currentTime.DayOfWeek == DayOfWeek.Saturday)
                     {
@@ -131,10 +132,10 @@ namespace TG_Bot
                         CreateNewSchedule(1, currentTime);
                         await Console.Out.WriteLineAsync("Parsing!");
                     }
-                        
+
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(1));
+                await Task.Delay(TimeSpan.FromHours(1));
             }
         }
 

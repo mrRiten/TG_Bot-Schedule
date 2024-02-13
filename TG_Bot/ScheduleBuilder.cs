@@ -39,7 +39,7 @@ namespace TG_Bot
 
         private static string BuildSimpleSchedule(ScheduleTable scheduleTable)
         {
-            string result = $"Расписание на {scheduleTable.Day}\n";
+            string result = $"📑 Расписание на {scheduleTable.Day}\n";
 
             foreach (var item in scheduleTable.Lessons)
             {
