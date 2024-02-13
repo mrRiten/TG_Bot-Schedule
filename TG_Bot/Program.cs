@@ -40,13 +40,9 @@ namespace TG_Bot
 
 
             var me = await botClient.GetMeAsync();
-            await UpdateScheduleAsync(12, 30);
+            await UpdateScheduleAsync(12, 0);
 
             Console.WriteLine($"Start listening for @{me.Username}");
-            Console.ReadLine();
-
-            // Send cancellation request to stop bot
-            cts.Cancel();
 
             async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
             {
@@ -95,6 +91,7 @@ namespace TG_Bot
                     chatId: chatId,
                     text: botResponse,
                     replyMarkup: replyKeyboardMarkup,
+                    parseMode: ParseMode.Markdown,
                     cancellationToken: cancellationToken);
             }
 

@@ -8,6 +8,31 @@ namespace TG_Bot
         private readonly string tableConf = "tableConf.json";
         private readonly string firstScheduleConf = "firstScheduleConf.json";
         private readonly string secondScheduleConf = "secondScheduleConf.json";
+        private readonly string scheduleTimeConf = "scheduleTimeConf.json";
+
+        public void SaveScheduleTime()
+        {
+            Dictionary<int, string> dict = new();
+            dict[0] = "123";
+            dict[1] = "123";
+
+            ScheduleTime scheduleTime = new ScheduleTime
+            {
+                NumToLessonTime = dict,
+            };
+
+            string jsonText = JsonConvert.SerializeObject(scheduleTime, Formatting.Indented);
+
+            File.WriteAllText(scheduleTimeConf, jsonText);
+        }
+
+        public ScheduleTime GetScheduleTime()
+        {
+            string jsonText = File.ReadAllText(scheduleTimeConf);
+            var item = JsonConvert.DeserializeObject<ScheduleTime>(jsonText);
+
+            return item;
+        }
 
         public void SaveTableRowData(List<TableRowData> rowData)
         {

@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TG_Bot
+﻿namespace TG_Bot
 {
     public class ScheduleBuilder
     {
         public static string BuildScheduleTable(ScheduleTable scheduleTable, List<TableRowData> tableRowData)
         {
             string[] numberRepLessons;
-            foreach(TableRowData row in tableRowData)
+            foreach (TableRowData row in tableRowData)
             {
                 if (row.NumbersReplacementLessons.Length > 1)
                 {
@@ -40,10 +33,12 @@ namespace TG_Bot
         private static string BuildSimpleSchedule(ScheduleTable scheduleTable)
         {
             string result = $"📑 Расписание на {scheduleTable.Day}\n";
+            ConfigWorker configWorker = new();
+            ScheduleTime scheduleTime = configWorker.GetScheduleTime();
 
             foreach (var item in scheduleTable.Lessons)
             {
-                result += $"{item.Key} {item.Value[0]} - {item.Value[1]}\n";
+                result += $"`{item.Key}` *{item.Value[0]}* - \\[{item.Value[1]}] _{scheduleTime.NumToLessonTime[item.Key]}_\n";
             }
             return result;
         }

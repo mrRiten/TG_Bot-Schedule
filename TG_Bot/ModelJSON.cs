@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace TG_Bot
 {
+    public class ScheduleTime
+    {
+        public Dictionary<int, string>? NumToLessonTime {  get; set; }
+    }
+
     public class ArchiveSchedule
     {
         public string? TextData { get; set; }
