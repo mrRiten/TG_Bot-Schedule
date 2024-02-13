@@ -12,7 +12,7 @@ namespace TG_Bot
 
         public static async Task Main(string[] args)
         {
-            var botClient = new TelegramBotClient("6854187070:AAGVtITTFVSBRxEqJi6dNkUdMSJxkJvWnCg");
+            var botClient = new TelegramBotClient("6750360636:AAHIGBvAWns6JgyvrzRhUO-e6Y0CvKzwLdI");
 
             using CancellationTokenSource cts = new();
 
