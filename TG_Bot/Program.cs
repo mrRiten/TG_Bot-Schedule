@@ -66,7 +66,7 @@ namespace TG_Bot
                 }
                 else if (messageText == "Следующее ➡️")
                 {
-                    if (DateTime.Now.Hour <= 12 && DateTime.Now.Minute <= 30)
+                    if (DateTime.Now.Hour < 12 || DateTime.Now.Hour == 12 && DateTime.Now.Minute == 1)
                     {
                         var tableRowData = configWorker.GetTableRowData();
                         ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
