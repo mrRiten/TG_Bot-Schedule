@@ -9,7 +9,6 @@ namespace TG_Bot
 {
     internal class Program
     {
-
         public static async Task Main(string[] args)
         {
             var botClient = new TelegramBotClient("6854187070:AAGVtITTFVSBRxEqJi6dNkUdMSJxkJvWnCg");
@@ -66,11 +65,12 @@ namespace TG_Bot
                 }
                 else if (messageText == "Следующее ➡️")
                 {
-                    if (DateTime.Now.Hour < 12 || DateTime.Now.Hour == 12 && DateTime.Now.Minute == 1)
+                    var tableRowData = configWorker.GetTableRowData();
+
+                    if (tableRowData.Count > 0)
                     {
-                        var tableRowData = configWorker.GetTableRowData();
                         ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
-                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
+                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
                     }
                     else
                     {
@@ -129,7 +129,11 @@ namespace TG_Bot
                         CreateNewSchedule(1, currentTime);
                         await Console.Out.WriteLineAsync("Parsing!");
                     }
-
+                }
+                else
+                {
+                    ConfigWorker configWorker = new();
+                    configWorker.ClearTableConf();
                 }
 
                 await Task.Delay(TimeSpan.FromHours(1));
@@ -142,9 +146,17 @@ namespace TG_Bot
             Parser parser = new();
             parser.ParseHTML();
             var tableRowData = configWorker.GetTableRowData();
-            ScheduleTable scheduleTable = configWorker.GetScheduleTable(currentTime.AddDays(addDyasValue).DayOfWeek, tableRowData[0].DayOfSchedule);
-            string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
-            configWorker.SaveToArchive(resultText, currentTime.AddDays(addDyasValue));
+            if (tableRowData.Count > 0)
+            {
+                ScheduleTable scheduleTable = configWorker.GetScheduleTable(currentTime.AddDays(addDyasValue).DayOfWeek, tableRowData[0].DayOfSchedule);
+                string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
+                configWorker.SaveToArchive(resultText, currentTime.AddDays(addDyasValue));
+            }
+            else
+            {
+                Console.Out.WriteLine("Null");
+            }
+            
         }
 
     }

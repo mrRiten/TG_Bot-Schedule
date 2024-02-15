@@ -10,20 +10,10 @@ namespace TG_Bot
         private readonly string secondScheduleConf = "secondScheduleConf.json";
         private readonly string scheduleTimeConf = "scheduleTimeConf.json";
 
-        public void SaveScheduleTime()
+
+        public void ClearTableConf ()
         {
-            Dictionary<int, string> dict = new();
-            dict[0] = "123";
-            dict[1] = "123";
-
-            ScheduleTime scheduleTime = new ScheduleTime
-            {
-                NumToLessonTime = dict,
-            };
-
-            string jsonText = JsonConvert.SerializeObject(scheduleTime, Formatting.Indented);
-
-            File.WriteAllText(scheduleTimeConf, jsonText);
+            File.WriteAllText(tableConf, "[]");
         }
 
         public ScheduleTime GetScheduleTime()

@@ -55,7 +55,7 @@ namespace TG_Bot
 
                             // Добавление в список
                             rowDataList.Add(rowData);
-
+                            
                         }
                     }
                     else Console.WriteLine("Не найден 2 столбец");

@@ -25,11 +25,6 @@
             return BuildSimpleSchedule(scheduleTable);
         }
 
-        public static string BuildScheduleTable(ScheduleTable scheduleTable)
-        {
-            return BuildSimpleSchedule(scheduleTable);
-        }
-
         private static string BuildBeautifulWeekday(ScheduleTable scheduleTable)
         {
             string weekday = String.Concat(scheduleTable.Day);
@@ -69,6 +64,9 @@
             string result = $"📑 Расписание на *{weekday}*\n";
             ConfigWorker configWorker = new();
             ScheduleTime scheduleTime = configWorker.GetScheduleTime();
+
+            Dictionary<int, string[]> sc = scheduleTable.Lessons.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.Value);
+            scheduleTable.Lessons = sc;
 
             foreach (var item in scheduleTable.Lessons)
             {
