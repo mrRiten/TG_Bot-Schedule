@@ -65,16 +65,36 @@ namespace TG_Bot
                 }
                 else if (messageText == "Следующее ➡️")
                 {
-                    var tableRowData = configWorker.GetTableRowData();
+                    // Error block 
 
-                    if (tableRowData.Count > 0)
+                    if (configWorker.GetTableRowData()[0].Index == 0)
                     {
+                        var tableRowData = configWorker.GetTableRowData();
                         ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
-                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
+                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
                     }
                     else
                     {
-                        botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(1).DayOfWeek).TextData ?? "Ошибка";
+                        var archiveData = configWorker.GetFromArchive(DateTime.Today.AddDays(1).DayOfWeek);
+                        if (archiveData != null)
+                        {
+                            botResponse = archiveData.TextData ?? "Error";
+                        }
+                        else
+                        {
+                            if (DateTime.Today.DayOfWeek == DayOfWeek.Saturday)
+                            {
+                                var tableRowData = configWorker.GetTableRowData();
+                                ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(2).DayOfWeek, tableRowData[0].DayOfSchedule);
+                                botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
+                            }
+                            else
+                            {
+                                var tableRowData = configWorker.GetTableRowData();
+                                ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
+                                botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
+                            }
+                        }
                     }
                 }
                 else if (messageText == "⬅️ Предыдущее")
@@ -107,7 +127,6 @@ namespace TG_Bot
                 Console.WriteLine(ErrorMessage);
                 return Task.CompletedTask;
             }
-
         }
 
         public static async Task UpdateScheduleAsync(int hour, int minute)
@@ -130,11 +149,6 @@ namespace TG_Bot
                         await Console.Out.WriteLineAsync("Parsing!");
                     }
                 }
-                else
-                {
-                    ConfigWorker configWorker = new();
-                    configWorker.ClearTableConf();
-                }
 
                 await Task.Delay(TimeSpan.FromHours(1));
             }
@@ -146,15 +160,16 @@ namespace TG_Bot
             Parser parser = new();
             parser.ParseHTML();
             var tableRowData = configWorker.GetTableRowData();
-            if (tableRowData.Count > 0)
+
+            if (configWorker.GetTableRowData()[0].Index == 0)
+            {
+                Console.Out.WriteLine("Now data-parser is null");
+            }
+            else
             {
                 ScheduleTable scheduleTable = configWorker.GetScheduleTable(currentTime.AddDays(addDyasValue).DayOfWeek, tableRowData[0].DayOfSchedule);
                 string resultText = ScheduleBuilder.BuildScheduleTable(scheduleTable, tableRowData);
                 configWorker.SaveToArchive(resultText, currentTime.AddDays(addDyasValue));
-            }
-            else
-            {
-                Console.Out.WriteLine("Null");
             }
             
         }

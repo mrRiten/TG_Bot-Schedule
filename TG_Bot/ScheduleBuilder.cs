@@ -25,6 +25,11 @@
             return BuildSimpleSchedule(scheduleTable);
         }
 
+        public static string BuildScheduleTable(ScheduleTable scheduleTable)
+        {
+            return BuildSimpleSchedule(scheduleTable);
+        }
+
         private static string BuildBeautifulWeekday(ScheduleTable scheduleTable)
         {
             string weekday = String.Concat(scheduleTable.Day);

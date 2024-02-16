@@ -10,12 +10,6 @@ namespace TG_Bot
         private readonly string secondScheduleConf = "secondScheduleConf.json";
         private readonly string scheduleTimeConf = "scheduleTimeConf.json";
 
-
-        public void ClearTableConf ()
-        {
-            File.WriteAllText(tableConf, "[]");
-        }
-
         public ScheduleTime GetScheduleTime()
         {
             string jsonText = File.ReadAllText(scheduleTimeConf);
@@ -93,7 +87,7 @@ namespace TG_Bot
             return archives;
         }
 
-        public ArchiveSchedule GetFromArchive(DayOfWeek dayOfSave)
+        public ArchiveSchedule? GetFromArchive(DayOfWeek dayOfSave)
         {
             var archives = GetAllArchive();
             foreach (var record in archives)

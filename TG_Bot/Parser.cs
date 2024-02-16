@@ -55,14 +55,26 @@ namespace TG_Bot
 
                             // Добавление в список
                             rowDataList.Add(rowData);
-                            
+
                         }
                     }
                     else Console.WriteLine("Не найден 2 столбец");
                 }
 
             }
-            else Console.WriteLine("Таблица не найдена");
+            else
+            {
+                Console.Out.WriteLine("Null data parsing!");
+            }
+
+            if (rowDataList.Count == 0)
+            {
+                TableRowData rowData = new TableRowData
+                {
+                    DayOfSchedule = dayOfSchedule
+                };
+                rowDataList.Add(rowData);
+            }
 
             ConfigWorker configWorker = new ConfigWorker();
             configWorker.SaveTableRowData(rowDataList);
