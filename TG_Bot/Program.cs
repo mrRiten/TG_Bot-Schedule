@@ -61,7 +61,16 @@ namespace TG_Bot
 
                 if (messageText == "📑 Расписание")
                 {
-                    botResponse = configWorker.GetFromArchive(DateTime.Today.DayOfWeek).TextData ?? "";
+                    var archive = configWorker.GetFromArchive(DateTime.Today.DayOfWeek);
+                    if ( archive is not null)
+                    {
+                        botResponse = configWorker.GetFromArchive(DateTime.Today.DayOfWeek).TextData ?? " ";
+                    }
+                    else
+                    {
+                        botResponse = "Сегодня выходной!";
+                    }
+                    
                 }
                 else if (messageText == "Следующее ➡️")
                 {
