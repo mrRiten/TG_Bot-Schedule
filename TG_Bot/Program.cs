@@ -66,9 +66,15 @@ namespace TG_Bot
                     {
                         botResponse = configWorker.GetFromArchive(DateTime.Today.DayOfWeek).TextData ?? " ";
                     }
-                    else
+                    else if (DateTime.Today.DayOfWeek == DayOfWeek.Sunday)
                     {
                         botResponse = "Сегодня выходной!";
+                    }
+                    else
+                    {
+                        var tableRowData = configWorker.GetTableRowData();
+                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
+                        botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
                     }
                     
                 }
@@ -79,7 +85,7 @@ namespace TG_Bot
                     if (configWorker.GetTableRowData()[0].Index == 0)
                     {
                         var tableRowData = configWorker.GetTableRowData();
-                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
+                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.DayOfWeek, tableRowData[0].DayOfSchedule);
                         botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
                     }
                     else
@@ -108,7 +114,15 @@ namespace TG_Bot
                 }
                 else if (messageText == "⬅️ Предыдущее")
                 {
-                    botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek).TextData ?? "";
+                    if (DateTime.Today.AddDays(-1).DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek).TextData ?? "";
+                    }
+                    else
+                    {
+                        botResponse = "Вчера был выходной!";
+                    }
+                    
                 }
                 else{
                     botResponse = "Я не знаю такой команды(";

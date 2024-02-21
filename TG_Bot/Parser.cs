@@ -38,24 +38,29 @@ namespace TG_Bot
                     // Проверяем, есть ли вторая ячейка и содержит ли она нужную нам надпись
                     if (cells.Count > 1)
                     {
-                        if (cells[1].InnerText.Contains("ИС1-21"))
+                        try
                         {
-
-                            // Создаем объект для хранения данных строки
-                            TableRowData rowData = new TableRowData
+                            if (cells[1].InnerText.Contains("ИС1-21"))
                             {
-                                Index = i,
-                                Group = cells[1].InnerText,
-                                NumbersReplacementLessons = cells[2].InnerText,
-                                ScheduledLessons = cells[3].InnerText,
-                                ReplacementLessons = cells[4].InnerText,
-                                Auditorium = cells[5].InnerText,
-                                DayOfSchedule = dayOfSchedule
-                            };
+                                // Создаем объект для хранения данных строки
+                                TableRowData rowData = new TableRowData
+                                {
+                                    Index = i,
+                                    Group = cells[1].InnerText,
+                                    NumbersReplacementLessons = cells[2].InnerText,
+                                    ScheduledLessons = cells[3].InnerText,
+                                    ReplacementLessons = cells[4].InnerText,
+                                    Auditorium = cells[5].InnerText,
+                                    DayOfSchedule = dayOfSchedule
+                                };
 
-                            // Добавление в список
-                            rowDataList.Add(rowData);
-
+                                // Добавление в список
+                                rowDataList.Add(rowData);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Out.WriteLine(ex);
                         }
                     }
                     else Console.WriteLine("Не найден 2 столбец");
