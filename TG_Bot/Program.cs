@@ -116,7 +116,14 @@ namespace TG_Bot
                 {
                     if (DateTime.Today.AddDays(-1).DayOfWeek != DayOfWeek.Sunday)
                     {
-                        botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek).TextData ?? "";
+                        if (configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek) is not null)
+                            botResponse = configWorker.GetFromArchive(DateTime.Today.AddDays(-1).DayOfWeek).TextData ?? "";
+                        else
+                        {
+                            var tableRowData = configWorker.GetTableRowData();
+                            ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(-1).DayOfWeek, tableRowData[0].DayOfSchedule);
+                            botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
+                        }
                     }
                     else
                     {
