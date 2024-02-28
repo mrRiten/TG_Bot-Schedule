@@ -1,19 +1,33 @@
-﻿namespace TG_Bot
+﻿using System.Collections.Generic;
+
+namespace TG_Bot
 {
     public class ScheduleBuilder
     {
         public static string BuildScheduleTable(ScheduleTable scheduleTable, List<TableRowData> tableRowData)
         {
-            string[] numberRepLessons;
+            var numberRepLessons = new List<string>();
             foreach (TableRowData row in tableRowData)
             {
-                if (row.NumbersReplacementLessons.Length > 1)
+                if (row.NumbersReplacementLessons.Contains(','))
                 {
-                    numberRepLessons = row.NumbersReplacementLessons.Split(",");
+                    string[] temp = row.NumbersReplacementLessons.Split(',');
+                    for (int i = 0; i < temp.Length; i++)
+                    {
+                        numberRepLessons.Add(temp[i]);
+                    }
+                }
+                else if (row.NumbersReplacementLessons.Contains('-'))
+                {
+                    string[] temp = row.NumbersReplacementLessons.Split('-');
+                    for (int i = int.Parse(temp[0]); i <= int.Parse(temp[temp.Length - 1]); i++)
+                    {
+                        numberRepLessons.Add(string.Join("", i));
+                    }
                 }
                 else
                 {
-                    numberRepLessons = [row.NumbersReplacementLessons];
+                    numberRepLessons.Add(row.NumbersReplacementLessons);
                 }
 
                 foreach (var number in numberRepLessons)
