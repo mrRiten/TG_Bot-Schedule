@@ -85,7 +85,7 @@ namespace TG_Bot
                     if (configWorker.GetTableRowData()[0].Index == 0)
                     {
                         var tableRowData = configWorker.GetTableRowData();
-                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.DayOfWeek, tableRowData[0].DayOfSchedule);
+                        ScheduleTable scheduleTable = configWorker.GetScheduleTable(DateTime.Now.AddDays(1).DayOfWeek, tableRowData[0].DayOfSchedule);
                         botResponse = ScheduleBuilder.BuildScheduleTable(scheduleTable);
                     }
                     else
